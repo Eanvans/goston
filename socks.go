@@ -846,16 +846,50 @@ func (h *socks5Handler) Init(options ...HandlerOption) {
 	)
 }
 
+type countingConn struct {
+	net.Conn
+	readBytes, writeBytes int64
+}
+
+func (c *countingConn) Read(b []byte) (n int, err error) {
+	n, err = c.Conn.Read(b)
+	if n > 0 {
+		c.readBytes += int64(n)
+	}
+	return
+}
+
+func (c *countingConn) Write(b []byte) (n int, err error) {
+	n, err = c.Conn.Write(b)
+	if n > 0 {
+		c.writeBytes += int64(n)
+	}
+	return
+}
+
+var data int64
+
 func (h *socks5Handler) Handle(conn net.Conn) {
 	defer conn.Close()
 
-	conn = gosocks5.ServerConn(conn, h.selector)
-	req, err := gosocks5.ReadRequest(conn)
+	// 使用 countingConn 包装原始连接
+	counting := &countingConn{Conn: conn}
+
+	// 将 gosocks5.ServerConn 应用于 countingConn
+	counting = &countingConn{Conn: gosocks5.ServerConn(counting, h.selector)}
+
+	req, err := gosocks5.ReadRequest(counting)
 	if err != nil {
 		log.Logf("[socks5] %s -> %s : %s",
 			conn.RemoteAddr(), conn.LocalAddr(), err)
 		return
 	}
+	data += counting.readBytes
+	data += counting.writeBytes
+
+	// 在这里你可以访问 counting.readBytes 和 counting.writeBytes 来获取数据量
+	fmt.Printf("Read bytes: %d, Write bytes: %d\n", counting.readBytes, counting.writeBytes)
+	fmt.Printf("Total bytes: %d kb", data/1024)
 
 	if Debug {
 		log.Logf("[socks5] %s -> %s\n%s",
@@ -1243,6 +1277,7 @@ func (h *socks5Handler) transportUDP(relay, peer net.PacketConn) (err error) {
 
 		for {
 			n, laddr, err := relay.ReadFrom(b)
+			fmt.Println(n)
 			if err != nil {
 				errc <- err
 				return
