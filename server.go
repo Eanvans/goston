@@ -1,6 +1,7 @@
 package gost
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"time"
@@ -80,7 +81,6 @@ func (s *Server) Serve(h Handler, opts ...ServerOption) error {
 			return e
 		}
 		tempDelay = 0
-
 		go h.Handle(conn)
 	}
 }
@@ -102,6 +102,7 @@ type Listener interface {
 	net.Listener
 }
 
+// 这里大致统计了所有的包，但是视频流怎么办？
 func transport(rw1, rw2 io.ReadWriter) error {
 	errc := make(chan error, 1)
 	go func() {
@@ -119,10 +120,14 @@ func transport(rw1, rw2 io.ReadWriter) error {
 	return nil
 }
 
+var data int64
+
 func copyBuffer(dst io.Writer, src io.Reader) error {
 	buf := lPool.Get().([]byte)
 	defer lPool.Put(buf)
 
-	_, err := io.CopyBuffer(dst, src, buf)
+	n, err := io.CopyBuffer(dst, src, buf)
+	data += n
+	fmt.Printf("%d kb \r\n", data/1024)
 	return err
 }
