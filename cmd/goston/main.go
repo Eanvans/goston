@@ -5,13 +5,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"gostonc/internal/service"
+	"gostonc/internal/core"
+	ginRouter "gostonc/internal/router"
 	"net/http"
 	"os"
 	"runtime"
 
 	_ "net/http/pprof"
 
+	"github.com/fatih/color"
+	"github.com/gin-gonic/gin"
 	"github.com/ginuerzh/gost"
 	"github.com/go-log/log"
 )
@@ -60,7 +63,7 @@ func init() {
 		os.Exit(0)
 	}
 
-	service.InitDatabase()
+	core.Init()
 }
 
 func main() {
@@ -94,6 +97,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	go serveWeb()
+
 	select {}
 }
 
@@ -123,4 +128,27 @@ func start() error {
 	}
 
 	return nil
+}
+
+func serveWeb() {
+	gin.SetMode("debug")
+
+	router := ginRouter.NewRouter()
+
+	addr := "127.0.0.1:8888"
+	s := &http.Server{
+		Addr:           addr,
+		Handler:        router,
+		ReadTimeout:    3000,
+		WriteTimeout:   1000,
+		MaxHeaderBytes: 1 << 20,
+	}
+	fmt.Fprintf(color.Output, "gin server listen on %s\n",
+		color.GreenString(fmt.Sprintf("http://%s", addr)),
+	)
+
+	err := s.ListenAndServe()
+	if err != nil {
+		fmt.Printf("Failed to launch server, errs: %v", err)
+	}
 }
