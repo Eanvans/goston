@@ -33,3 +33,15 @@ func DoLogin(username string, passowrd string) (*model.User, error) {
 
 	return nil, errcode.UnauthorizedAuthNotExist
 }
+
+func PurchaseTimespan(userID int64) error {
+	timespan, err := core.Appbase.CreateUsertimespan(userID)
+	if err != nil {
+		return err
+	}
+
+	if u, ok := core.LoginIDUser[userID]; ok {
+		u.TimeSpan = *timespan
+	}
+	return nil
+}

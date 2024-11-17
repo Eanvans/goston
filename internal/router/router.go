@@ -51,5 +51,6 @@ func setVersionRoutes(r *gin.RouterGroup) {
 	noAuthApi := r.Group("/")
 	{
 		noAuthApi.POST("/user/register", api.UserRegiser)
+		noAuthApi.POST("/user/purchase", api.PurchaseTimespan)
 	}
 }

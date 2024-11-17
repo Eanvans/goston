@@ -25,3 +25,21 @@ func UserRegiser(c *gin.Context) {
 
 	resp.ToResponse(u)
 }
+
+func PurchaseTimespan(c *gin.Context) {
+	resp := app.NewResponse(c)
+	data := UserPurchaseReq{}
+	if valid, errs := app.BindAndValid(c, &data); !valid {
+		logrus.Errorf("app.BindAndValid errs: %v", errs)
+		resp.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
+	}
+
+	err := service.UserPurchaseTimespan(data.UserID)
+	if err != nil {
+		resp.ToErrorResponse(err.(*errcode.Error))
+		return
+	}
+
+	resp.ToResponse()
+}

@@ -1,9 +1,10 @@
 package gost
 
 import (
-	"fmt"
+	"gostonc/internal/core"
 	"io"
 	"net"
+	"sync/atomic"
 	"time"
 
 	"github.com/go-log/log"
@@ -125,7 +126,8 @@ func copyBuffer(dst io.Writer, src io.Reader) error {
 	defer lPool.Put(buf)
 
 	n, err := io.CopyBuffer(dst, src, buf)
-	data += n
-	fmt.Printf("%d kb \r\n", data/1024)
+	if u, ok := core.LoginIDUser[1]; ok {
+		atomic.AddInt64(&u.TimeSpan.SpendFlow, n)
+	}
 	return err
 }

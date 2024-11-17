@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"gostonc/internal/core"
 	"gostonc/internal/gost"
+	"gostonc/internal/service"
 	"net/http"
 	"os"
 	"runtime"
@@ -63,6 +64,7 @@ func init() {
 	}
 
 	core.Init()
+	service.Init()
 }
 
 func main() {
@@ -97,7 +99,6 @@ func main() {
 	}
 
 	go serveWeb()
-
 	select {}
 }
 

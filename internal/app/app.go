@@ -29,21 +29,22 @@ func NewResponse(ctx *gin.Context) *Response {
 	return &Response{Ctx: ctx}
 }
 
-func (r *Response) ToResponse(data interface{}) {
+func (r *Response) ToResponse(data ...interface{}) {
 	//hostname, _ := os.Hostname()
-	if data == nil {
-		data = gin.H{
+	var respData any
+	if len(data) == 0 {
+		respData = gin.H{
 			"code": 0,
 			"msg":  "success",
 		}
 	} else {
-		data = gin.H{
+		respData = gin.H{
 			"code": 0,
 			"msg":  "success",
 			"data": data,
 		}
 	}
-	r.Ctx.JSON(http.StatusOK, data)
+	r.Ctx.JSON(http.StatusOK, respData)
 }
 
 func (r *Response) ToResponseArray(arr interface{}) {
