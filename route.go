@@ -377,9 +377,10 @@ func (r *route) GenRouters() ([]router, error) {
 			return nil, err
 		}
 		if authenticator == nil && node.User != nil {
-			kvs := make(map[string]string)
-			kvs[node.User.Username()], _ = node.User.Password()
-			authenticator = gost.NewLocalAuthenticator(kvs)
+			// kvs := make(map[string]string)
+			// kvs[node.User.Username()], _ = node.User.Password()
+			// authenticator = gost.NewLocalAuthenticator(kvs)
+			authenticator = gost.NewDBAuthenticator()
 		}
 		if node.User == nil {
 			if users, _ := parseUsers(node.Get("secrets")); len(users) > 0 {

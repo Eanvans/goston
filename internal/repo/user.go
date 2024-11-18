@@ -1,6 +1,8 @@
 package repo
 
-import "gostonc/internal/model"
+import (
+	"gostonc/internal/model"
+)
 
 func (r *RepoModule) CreateUser(u *model.User) (*model.User, error) {
 	err := r.db.
@@ -42,4 +44,24 @@ func (r *RepoModule) GetUserList() ([]*model.User, error) {
 		Error
 
 	return users, err
+}
+
+func (r *RepoModule) Authenticate(username, password string) bool {
+	user, err := r.GetUserByUsername(username)
+	if err != nil {
+		return false
+	}
+
+	if user.Model != nil && user.ID > 0 {
+		// 对比密码是否正确
+		if model.ValidPassword(user.Password, password, user.Salt) {
+			if user.Status == model.USER_STATUS_BANNED {
+				return false
+			}
+			return true
+		}
+		return false
+	}
+
+	return false
 }

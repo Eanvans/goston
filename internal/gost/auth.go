@@ -2,6 +2,8 @@ package gost
 
 import (
 	"bufio"
+	"gostonc/internal/core"
+	"gostonc/internal/repo"
 	"io"
 	"strings"
 	"sync"
@@ -27,6 +29,10 @@ func NewLocalAuthenticator(kvs map[string]string) *LocalAuthenticator {
 		kvs:     kvs,
 		stopped: make(chan struct{}),
 	}
+}
+
+func NewDBAuthenticator() repo.RepoBase {
+	return core.Appbase
 }
 
 // Authenticate checks the validity of the provided user-password pair.

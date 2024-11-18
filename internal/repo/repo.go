@@ -22,6 +22,8 @@ type IUserRepo interface {
 	GetUserByUsername(username string) (*model.User, error)
 
 	GetUserList() ([]*model.User, error)
+
+	Authenticate(username, password string) bool
 }
 
 type ITimespanRepo interface {

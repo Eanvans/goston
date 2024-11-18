@@ -169,7 +169,8 @@ func (selector *serverSelector) OnSelected(method uint8, conn net.Conn) (net.Con
 			log.Logf("[socks5] %s - %s: %s", conn.RemoteAddr(), conn.LocalAddr(), req.String())
 		}
 
-		if selector.Authenticator != nil && !selector.Authenticator.Authenticate(req.Username, req.Password) {
+		if selector.Authenticator != nil &&
+			!selector.Authenticator.Authenticate(req.Username, req.Password) {
 			resp := gosocks5.NewUserPassResponse(gosocks5.UserPassVer, gosocks5.Failure)
 			if err := resp.Write(conn); err != nil {
 				log.Logf("[socks5] %s - %s: %s", conn.RemoteAddr(), conn.LocalAddr(), err)
