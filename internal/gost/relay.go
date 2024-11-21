@@ -258,7 +258,7 @@ func (h *relayHandler) Handle(conn net.Conn) {
 	conn = sc
 
 	log.Logf("[relay] %s <-> %s", conn.RemoteAddr(), raddr)
-	transport(conn, cc)
+	transport(0, conn, cc)
 	log.Logf("[relay] %s >-< %s", conn.RemoteAddr(), raddr)
 }
 

@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"gostonc/internal/gost"
+	"gostonc/internal/gost/gostauth"
 	"net"
 	"net/url"
 	"os"
@@ -376,12 +377,14 @@ func (r *route) GenRouters() ([]router, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		if authenticator == nil && node.User != nil {
 			// kvs := make(map[string]string)
 			// kvs[node.User.Username()], _ = node.User.Password()
 			// authenticator = gost.NewLocalAuthenticator(kvs)
-			authenticator = gost.NewDBAuthenticator()
+			authenticator = gostauth.NewDBAuthenticator()
 		}
+
 		if node.User == nil {
 			if users, _ := parseUsers(node.Get("secrets")); len(users) > 0 {
 				node.User = users[0]

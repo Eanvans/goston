@@ -14,6 +14,7 @@ type RepoModule struct {
 type RepoBase interface {
 	IUserRepo
 	ITimespanRepo
+	IAuthenticate
 }
 
 type IUserRepo interface {
@@ -22,8 +23,10 @@ type IUserRepo interface {
 	GetUserByUsername(username string) (*model.User, error)
 
 	GetUserList() ([]*model.User, error)
+}
 
-	Authenticate(username, password string) bool
+type IAuthenticate interface {
+	Authenticate(username, password string) (bool, *model.User)
 }
 
 type ITimespanRepo interface {

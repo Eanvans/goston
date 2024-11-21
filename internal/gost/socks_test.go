@@ -393,7 +393,7 @@ func socks5BindRoundtrip(t *testing.T, targetURL string, data []byte) (err error
 	if err != nil {
 		return
 	}
-	go transport(hc, conn)
+	go transport(0, hc, conn)
 
 	return httpRoundtrip(cc, targetURL, data)
 }
@@ -476,7 +476,7 @@ func muxBindRoundtrip(client *Client, server *Server, bindAddr, targetURL string
 	}
 	defer hc.Close()
 
-	go transport(hc, conn)
+	go transport(0, hc, conn)
 
 	return httpRoundtrip(cc, targetURL, data)
 }

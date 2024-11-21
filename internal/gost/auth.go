@@ -2,8 +2,7 @@ package gost
 
 import (
 	"bufio"
-	"gostonc/internal/core"
-	"gostonc/internal/repo"
+	"gostonc/internal/model"
 	"io"
 	"strings"
 	"sync"
@@ -13,6 +12,7 @@ import (
 // Authenticator is an interface for user authentication.
 type Authenticator interface {
 	Authenticate(user, password string) bool
+	GetCurrentUser() *model.User
 }
 
 // LocalAuthenticator is an Authenticator that authenticates client by local key-value pairs.
@@ -31,8 +31,12 @@ func NewLocalAuthenticator(kvs map[string]string) *LocalAuthenticator {
 	}
 }
 
-func NewDBAuthenticator() repo.RepoBase {
-	return core.Appbase
+func (au *LocalAuthenticator) GetCurrentUser() *model.User {
+	return &model.User{
+		Model: &model.Model{
+			ID: 0,
+		},
+	}
 }
 
 // Authenticate checks the validity of the provided user-password pair.

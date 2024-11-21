@@ -160,7 +160,7 @@ func sshRemoteForwardRoundtrip(t *testing.T, targetURL string, data []byte) (err
 	}
 	defer cc.Close()
 
-	go transport(conn, cc)
+	go transport(0, conn, cc)
 
 	t.Log("httpRoundtrip")
 	return httpRoundtrip(c, targetURL, data)

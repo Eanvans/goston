@@ -103,14 +103,14 @@ type Listener interface {
 	net.Listener
 }
 
-func transport(rw1, rw2 io.ReadWriter) error {
+func transport(userID int64, rw1, rw2 io.ReadWriter) error {
 	errc := make(chan error, 1)
 	go func() {
-		errc <- copyBuffer(rw1, rw2)
+		errc <- copyBuffer(userID, rw1, rw2)
 	}()
 
 	go func() {
-		errc <- copyBuffer(rw2, rw1)
+		errc <- copyBuffer(userID, rw2, rw1)
 	}()
 
 	if err := <-errc; err != nil && err != io.EOF {
@@ -121,13 +121,15 @@ func transport(rw1, rw2 io.ReadWriter) error {
 }
 
 // 统计流量
-func copyBuffer(dst io.Writer, src io.Reader) error {
+func copyBuffer(userID int64, dst io.Writer, src io.Reader) error {
 	buf := lPool.Get().([]byte)
 	defer lPool.Put(buf)
 
 	n, err := io.CopyBuffer(dst, src, buf)
-	if u, ok := core.LoginIDUser[1]; ok {
+
+	if u, ok := core.LoginIDUser[userID]; ok {
 		atomic.AddInt64(&u.TimeSpan.SpendFlow, n)
 	}
+
 	return err
 }
