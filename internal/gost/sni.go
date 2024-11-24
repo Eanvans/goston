@@ -174,7 +174,7 @@ func (h *sniHandler) Handle(conn net.Conn) {
 	}
 
 	log.Logf("[sni] %s <-> %s", cc.LocalAddr(), host)
-	transport(0, conn, cc)
+	transport(nil, conn, cc)
 	log.Logf("[sni] %s >-< %s", cc.LocalAddr(), host)
 }
 

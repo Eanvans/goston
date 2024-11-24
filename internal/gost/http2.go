@@ -463,13 +463,13 @@ func (h *http2Handler) roundTrip(w http.ResponseWriter, r *http.Request) {
 			defer conn.Close()
 
 			log.Logf("[http2] %s <-> %s : downgrade to HTTP/1.1", r.RemoteAddr, host)
-			transport(0, conn, cc)
+			transport(nil, conn, cc)
 			log.Logf("[http2] %s >-< %s", r.RemoteAddr, host)
 			return
 		}
 
 		log.Logf("[http2] %s <-> %s", r.RemoteAddr, host)
-		transport(0, &readWriter{r: r.Body, w: flushWriter{w}}, cc)
+		transport(nil, &readWriter{r: r.Body, w: flushWriter{w}}, cc)
 		log.Logf("[http2] %s >-< %s", r.RemoteAddr, host)
 		return
 	}

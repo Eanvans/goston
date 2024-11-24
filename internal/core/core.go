@@ -2,25 +2,19 @@ package core
 
 import (
 	"gostonc/internal/model"
-	"gostonc/internal/repo"
 )
 
-var (
-	Appbase repo.RepoBase
+type RepoBase interface {
+	IUserRepo
+	ITimespanRepo
+	IAuthenticate
+}
 
-	LoginIDUser map[int64]*model.User = make(map[int64]*model.User)
-)
+type IAuthenticate interface {
+	Authenticate(username, password string) (bool, *model.User)
+}
 
-func Init() {
-	Appbase = repo.NewRepoBase()
-
-	userList, err := Appbase.GetUserList()
-	if err != nil {
-		//TODO log fatal err
-		return
-	}
-
-	for _, u := range userList {
-		LoginIDUser[u.ID] = u
-	}
+type ITimespanRepo interface {
+	CreateUsertimespan(userID int64) (*model.TimeSpan, error)
+	UpdateUserTimespan(ts *model.TimeSpan) error
 }

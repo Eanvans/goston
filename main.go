@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"gostonc/internal/core"
 	"gostonc/internal/gost"
 	"gostonc/internal/service"
 	"net/http"
@@ -63,7 +62,6 @@ func init() {
 		os.Exit(0)
 	}
 
-	core.Init()
 	service.Init()
 }
 

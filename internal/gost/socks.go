@@ -974,7 +974,7 @@ func (h *socks5Handler) handleConnect(conn net.Conn, req *gosocks5.Request) {
 			conn.RemoteAddr(), conn.LocalAddr(), rep)
 	}
 	log.Logf("[socks5] %s <-> %s", conn.RemoteAddr(), host)
-	transport(h.options.Authenticator.GetCurrentUser().ID, conn, cc)
+	transport(h.options.Authenticator.GetCurrentUser(), conn, cc)
 	log.Logf("[socks5] %s >-< %s", conn.RemoteAddr(), host)
 }
 
@@ -1013,7 +1013,7 @@ func (h *socks5Handler) handleBind(conn net.Conn, req *gosocks5.Request) {
 	defer cc.Close()
 	req.Write(cc)
 	log.Logf("[socks5-bind] %s <-> %s", conn.RemoteAddr(), addr)
-	transport(h.options.Authenticator.GetCurrentUser().ID, conn, cc)
+	transport(h.options.Authenticator.GetCurrentUser(), conn, cc)
 	log.Logf("[socks5-bind] %s >-< %s", conn.RemoteAddr(), addr)
 }
 
@@ -1071,7 +1071,7 @@ func (h *socks5Handler) bindOn(conn net.Conn, addr string) {
 			defer close(errc)
 			defer pc1.Close()
 
-			errc <- transport(h.options.Authenticator.GetCurrentUser().ID, conn, pc1)
+			errc <- transport(h.options.Authenticator.GetCurrentUser(), conn, pc1)
 		}()
 
 		return errc
@@ -1098,7 +1098,7 @@ func (h *socks5Handler) bindOn(conn net.Conn, addr string) {
 			log.Logf("[socks5-bind] %s <- %s PEER %s ACCEPTED", conn.RemoteAddr(), socksAddr, pconn.RemoteAddr())
 
 			log.Logf("[socks5-bind] %s <-> %s", conn.RemoteAddr(), pconn.RemoteAddr())
-			if err = transport(h.options.Authenticator.GetCurrentUser().ID, pc2, pconn); err != nil {
+			if err = transport(h.options.Authenticator.GetCurrentUser(), pc2, pconn); err != nil {
 				log.Logf("[socks5-bind] %s - %s : %v", conn.RemoteAddr(), pconn.RemoteAddr(), err)
 			}
 			log.Logf("[socks5-bind] %s >-< %s", conn.RemoteAddr(), pconn.RemoteAddr())
@@ -1451,7 +1451,7 @@ func (h *socks5Handler) handleUDPTunnel(conn net.Conn, req *gosocks5.Request) {
 	req.Write(cc)
 
 	log.Logf("[socks5] udp-tun %s <-> %s", conn.RemoteAddr(), cc.RemoteAddr())
-	transport(h.options.Authenticator.GetCurrentUser().ID, conn, cc)
+	transport(h.options.Authenticator.GetCurrentUser(), conn, cc)
 	log.Logf("[socks5] udp-tun %s >-< %s", conn.RemoteAddr(), cc.RemoteAddr())
 }
 
@@ -1552,7 +1552,7 @@ func (h *socks5Handler) handleMuxBind(conn net.Conn, req *gosocks5.Request) {
 	defer cc.Close()
 	req.Write(cc)
 	log.Logf("[socks5] mbind %s <-> %s", conn.RemoteAddr(), cc.RemoteAddr())
-	transport(h.options.Authenticator.GetCurrentUser().ID, conn, cc)
+	transport(h.options.Authenticator.GetCurrentUser(), conn, cc)
 	log.Logf("[socks5] mbind %s >-< %s", conn.RemoteAddr(), cc.RemoteAddr())
 }
 
@@ -1626,7 +1626,7 @@ func (h *socks5Handler) muxBindOn(conn net.Conn, addr string) {
 			}
 			defer sc.Close()
 
-			transport(h.options.Authenticator.GetCurrentUser().ID, sc, c)
+			transport(h.options.Authenticator.GetCurrentUser(), sc, c)
 		}(cc)
 	}
 }
@@ -1794,7 +1794,7 @@ func (h *socks4Handler) handleConnect(conn net.Conn, req *gosocks4.Request) {
 	}
 
 	log.Logf("[socks4] %s <-> %s", conn.RemoteAddr(), addr)
-	transport(h.options.Authenticator.GetCurrentUser().ID, conn, cc)
+	transport(h.options.Authenticator.GetCurrentUser(), conn, cc)
 	log.Logf("[socks4] %s >-< %s", conn.RemoteAddr(), addr)
 }
 
@@ -1826,7 +1826,7 @@ func (h *socks4Handler) handleBind(conn net.Conn, req *gosocks4.Request) {
 	req.Write(cc)
 
 	log.Logf("[socks4-bind] %s <-> %s", conn.RemoteAddr(), cc.RemoteAddr())
-	transport(h.options.Authenticator.GetCurrentUser().ID, conn, cc)
+	transport(h.options.Authenticator.GetCurrentUser(), conn, cc)
 	log.Logf("[socks4-bind] %s >-< %s", conn.RemoteAddr(), cc.RemoteAddr())
 }
 

@@ -1,9 +1,10 @@
 package service
 
 import (
-	"fmt"
 	"gostonc/internal/app/scheduler"
 	"gostonc/internal/core"
+	"gostonc/internal/dao"
+	"gostonc/internal/model"
 	"log"
 	"strconv"
 	"strings"
@@ -13,7 +14,10 @@ import (
 )
 
 var (
-	taskScheduler *scheduler.TaskScheduler //任务调度器
+	DBbase core.RepoBase
+
+	loginUnameUser map[string]*model.User   = make(map[string]*model.User)
+	taskScheduler  *scheduler.TaskScheduler //任务调度器
 )
 
 type TaskScheduler struct {
@@ -24,12 +28,14 @@ type TaskScheduler struct {
 
 // 初始化
 func Init() {
+	DBbase = dao.NewRepoBase()
+
 	//启动定时任务处理系统
 	taskScheduler = scheduler.NewScheduler()
 
-	taskScheduler.AddTask("test", &scheduler.CyclicTimeFmt{
+	taskScheduler.AddTask("updateTimeSpan", &scheduler.CyclicTimeFmt{
 		Second: &scheduler.TimeCellFmt{Numbers: []int{10}, CellType: scheduler.Interval},
-	}, -1, test)
+	}, -1, UpdateUserTimespanByInteral)
 
 	taskScheduler.Start()
 }
@@ -41,11 +47,11 @@ func NewScheduler() *TaskScheduler {
 	}
 }
 
-func test(args ...interface{}) (ret interface{}) {
-	if u, ok := core.LoginIDUser[1]; ok {
-		fmt.Printf("%.2f - %s \r\n", (float64)(u.TimeSpan.SpendFlow)/(float64)(1024), "kb")
-		core.Appbase.UpdateUserTimespan(&u.TimeSpan)
-	}
+func UpdateUserTimespanByInteral(args ...interface{}) (ret interface{}) {
+	// if u, ok := LoginIDUser[1]; ok {
+	// 	fmt.Printf("%.2f - %s \r\n", (float64)(u.TimeSpan.SpendFlow)/(float64)(1024), "kb")
+	// 	DBbase.UpdateUserTimespan(&u.TimeSpan)
+	// }
 	return nil
 }
 

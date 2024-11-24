@@ -1,4 +1,4 @@
-package repo
+package dao
 
 import (
 	"gostonc/internal/model"
@@ -35,6 +35,20 @@ func (r *RepoModule) GetUserByUsername(username string) (*model.User, error) {
 	return u, nil
 }
 
+func (r *RepoModule) GetUserByID(id int64) (*model.User, error) {
+	u := &model.User{}
+
+	err := r.db.
+		Where("id = ?", id).
+		First(u).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
 func (r *RepoModule) GetUserList() ([]*model.User, error) {
 	var users []*model.User
 
@@ -44,24 +58,4 @@ func (r *RepoModule) GetUserList() ([]*model.User, error) {
 		Error
 
 	return users, err
-}
-
-func (r *RepoModule) Authenticate(username, password string) (bool, *model.User) {
-	user, err := r.GetUserByUsername(username)
-	if err != nil {
-		return false, nil
-	}
-
-	if user.Model != nil && user.ID > 0 {
-		// 对比密码是否正确
-		if model.ValidPassword(user.Password, password, user.Salt) {
-			if user.Status == model.USER_STATUS_BANNED {
-				return false, nil
-			}
-			return true, user
-		}
-		return false, nil
-	}
-
-	return false, nil
 }

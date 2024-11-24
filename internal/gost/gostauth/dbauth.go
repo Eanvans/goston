@@ -1,8 +1,8 @@
 package gostauth
 
 import (
-	"gostonc/internal/core"
 	"gostonc/internal/model"
+	"gostonc/internal/service"
 	"sync"
 	"time"
 )
@@ -29,7 +29,7 @@ func (au *DBAuthenticator) Authenticate(username, password string) bool {
 	au.mux.RLock()
 	defer au.mux.RUnlock()
 
-	ok, user := core.Appbase.Authenticate(username, password)
+	ok, user := service.AuthUserByUsernamePassword(username, password)
 	if !ok {
 		return false
 	}

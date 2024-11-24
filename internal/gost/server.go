@@ -1,7 +1,8 @@
 package gost
 
 import (
-	"gostonc/internal/core"
+	"gostonc/internal/model"
+	"gostonc/internal/service"
 	"io"
 	"net"
 	"sync/atomic"
@@ -103,14 +104,22 @@ type Listener interface {
 	net.Listener
 }
 
-func transport(userID int64, rw1, rw2 io.ReadWriter) error {
+func transport(user *model.User, rw1, rw2 io.ReadWriter) error {
 	errc := make(chan error, 1)
 	go func() {
-		errc <- copyBuffer(userID, rw1, rw2)
+		if user != nil {
+			errc <- copyBuffer(user.Username, rw1, rw2)
+		} else {
+			errc <- copyBuffer2(rw1, rw2)
+		}
 	}()
 
 	go func() {
-		errc <- copyBuffer(userID, rw2, rw1)
+		if user != nil {
+			errc <- copyBuffer(user.Username, rw2, rw1)
+		} else {
+			errc <- copyBuffer2(rw2, rw1)
+		}
 	}()
 
 	if err := <-errc; err != nil && err != io.EOF {
@@ -121,15 +130,23 @@ func transport(userID int64, rw1, rw2 io.ReadWriter) error {
 }
 
 // 统计流量
-func copyBuffer(userID int64, dst io.Writer, src io.Reader) error {
+func copyBuffer(uname string, dst io.Writer, src io.Reader) error {
 	buf := lPool.Get().([]byte)
 	defer lPool.Put(buf)
 
 	n, err := io.CopyBuffer(dst, src, buf)
 
-	if u, ok := core.LoginIDUser[userID]; ok {
+	if u, ok := service.GetCacheUserByUname(uname); ok {
 		atomic.AddInt64(&u.TimeSpan.SpendFlow, n)
 	}
 
+	return err
+}
+
+func copyBuffer2(dst io.Writer, src io.Reader) error {
+	buf := lPool.Get().([]byte)
+	defer lPool.Put(buf)
+
+	_, err := io.CopyBuffer(dst, src, buf)
 	return err
 }

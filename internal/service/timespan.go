@@ -1,9 +1,7 @@
 package service
 
-import "gostonc/internal/core"
-
 func UserPurchaseTimespan(userID int64) error {
-	_, err := core.Appbase.CreateUsertimespan(userID)
+	_, err := DBbase.CreateUsertimespan(userID)
 	if err != nil {
 		return err
 	}

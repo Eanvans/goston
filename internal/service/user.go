@@ -2,12 +2,11 @@ package service
 
 import (
 	"gostonc/internal/app/errcode"
-	"gostonc/internal/core"
 	"gostonc/internal/model"
 )
 
 func UserRegister(username, password string) (*model.User, error) {
-	user, err := core.Appbase.CreateUser(model.NewUser(username, password))
+	user, err := DBbase.CreateUser(model.NewUser(username, password))
 	if err != nil {
 		return nil, err
 	}
@@ -15,7 +14,7 @@ func UserRegister(username, password string) (*model.User, error) {
 }
 
 func DoLogin(username string, passowrd string) (*model.User, error) {
-	user, err := core.Appbase.GetUserByUsername(username)
+	user, err := DBbase.GetUserByUsername(username)
 	if err != nil {
 		return nil, errcode.UnauthorizedAuthNotExist
 	}
@@ -35,13 +34,36 @@ func DoLogin(username string, passowrd string) (*model.User, error) {
 }
 
 func PurchaseTimespan(userID int64) error {
-	timespan, err := core.Appbase.CreateUsertimespan(userID)
+	timespan, err := DBbase.CreateUsertimespan(userID)
 	if err != nil {
 		return err
 	}
 
-	if u, ok := core.LoginIDUser[userID]; ok {
+	user, err := DBbase.GetUserByID(userID)
+
+	if u, ok := loginUnameUser[user.Username]; ok {
 		u.TimeSpan = *timespan
 	}
 	return nil
+}
+
+func AuthUserByUsernamePassword(username, password string) (bool, *model.User) {
+	if user, ok := loginUnameUser[username]; ok {
+		return ok, user
+	}
+
+	ok, user := DBbase.Authenticate(username, password)
+	if ok {
+		loginUnameUser[username] = user
+		return ok, user
+	}
+
+	return false, nil
+}
+
+func GetCacheUserByUname(username string) (*model.User, bool) {
+	if user, ok := loginUnameUser[username]; ok {
+		return user, ok
+	}
+	return nil, false
 }

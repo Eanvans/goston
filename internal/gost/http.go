@@ -309,7 +309,7 @@ func (h *httpHandler) handleRequest(conn net.Conn, req *http.Request) {
 	}
 
 	log.Logf("[http] %s <-> %s", conn.RemoteAddr(), host)
-	transport(0, conn, cc)
+	transport(nil, conn, cc)
 	log.Logf("[http] %s >-< %s", conn.RemoteAddr(), host)
 }
 
@@ -347,7 +347,7 @@ func (h *httpHandler) authenticate(conn net.Conn, req *http.Request, resp *http.
 				req.Write(cc)
 				log.Logf("[http] %s <-> %s : forward to %s",
 					conn.RemoteAddr(), conn.LocalAddr(), ss[1])
-				transport(0, conn, cc)
+				transport(nil, conn, cc)
 				log.Logf("[http] %s >-< %s : forward to %s",
 					conn.RemoteAddr(), conn.LocalAddr(), ss[1])
 				return
@@ -417,7 +417,7 @@ func (h *httpHandler) forwardRequest(conn net.Conn, req *http.Request, route *Ch
 
 	errc := make(chan error, 1)
 	go func() {
-		errc <- copyBuffer(0, conn, cc)
+		errc <- copyBuffer("", conn, cc)
 	}()
 
 	go func() {

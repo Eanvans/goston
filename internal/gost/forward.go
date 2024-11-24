@@ -152,7 +152,7 @@ func (h *tcpDirectForwardHandler) Handle(conn net.Conn) {
 		addr = conn.LocalAddr().String()
 	}
 	log.Logf("[tcp] %s <-> %s", conn.RemoteAddr(), addr)
-	transport(0, conn, cc)
+	transport(nil, conn, cc)
 	log.Logf("[tcp] %s >-< %s", conn.RemoteAddr(), addr)
 }
 
@@ -217,7 +217,7 @@ func (h *udpDirectForwardHandler) Handle(conn net.Conn) {
 		addr = conn.LocalAddr().String()
 	}
 	log.Logf("[udp] %s <-> %s", conn.RemoteAddr(), addr)
-	transport(0, conn, cc)
+	transport(nil, conn, cc)
 	log.Logf("[udp] %s >-< %s", conn.RemoteAddr(), addr)
 }
 
@@ -283,7 +283,7 @@ func (h *tcpRemoteForwardHandler) Handle(conn net.Conn) {
 	node.ResetDead()
 
 	log.Logf("[rtcp] %s <-> %s", conn.LocalAddr(), node.Addr)
-	transport(0, cc, conn)
+	transport(nil, cc, conn)
 	log.Logf("[rtcp] %s >-< %s", conn.LocalAddr(), node.Addr)
 }
 
@@ -343,7 +343,7 @@ func (h *udpRemoteForwardHandler) Handle(conn net.Conn) {
 	node.ResetDead()
 
 	log.Logf("[rudp] %s <-> %s", conn.RemoteAddr(), node.Addr)
-	transport(0, conn, cc)
+	transport(nil, conn, cc)
 	log.Logf("[rudp] %s >-< %s", conn.RemoteAddr(), node.Addr)
 }
 

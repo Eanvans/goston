@@ -1,4 +1,4 @@
-package repo
+package dao
 
 import (
 	"gostonc/internal/model"
@@ -11,30 +11,7 @@ type RepoModule struct {
 	db *gorm.DB
 }
 
-type RepoBase interface {
-	IUserRepo
-	ITimespanRepo
-	IAuthenticate
-}
-
-type IUserRepo interface {
-	CreateUser(u *model.User) (*model.User, error)
-	UpdateUser(u *model.User) error
-	GetUserByUsername(username string) (*model.User, error)
-
-	GetUserList() ([]*model.User, error)
-}
-
-type IAuthenticate interface {
-	Authenticate(username, password string) (bool, *model.User)
-}
-
-type ITimespanRepo interface {
-	CreateUsertimespan(userID int64) (*model.TimeSpan, error)
-	UpdateUserTimespan(ts *model.TimeSpan) error
-}
-
-func NewRepoBase() RepoBase {
+func NewRepoBase() *RepoModule {
 	db, err := gorm.Open(sqlite.Open("goston.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
