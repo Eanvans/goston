@@ -52,6 +52,14 @@ func UpdateUserTimespanByInteral(args ...interface{}) (ret interface{}) {
 	// 	fmt.Printf("%.2f - %s \r\n", (float64)(u.TimeSpan.SpendFlow)/(float64)(1024), "kb")
 	// 	DBbase.UpdateUserTimespan(&u.TimeSpan)
 	// }
+	for _, u := range loginUnameUser {
+		if u.TimeSpan.Model != nil {
+			DBbase.UpdateUserTimespan(&u.TimeSpan)
+		}
+		//fmt.Printf("%.2f - %s \r\n", (float64)(u.TimeSpan.SpendFlow)/(float64)(1024), "kb")
+		//处理一下用户流量使用情况
+	}
+
 	return nil
 }
 

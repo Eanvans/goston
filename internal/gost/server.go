@@ -1,6 +1,7 @@
 package gost
 
 import (
+	"errors"
 	"gostonc/internal/model"
 	"gostonc/internal/service"
 	"io"
@@ -106,6 +107,11 @@ type Listener interface {
 
 func transport(user *model.User, rw1, rw2 io.ReadWriter) error {
 	errc := make(chan error, 1)
+
+	if user.TimeSpan.SpendFlow > user.TimeSpan.TotalFlow {
+		return errors.New("流量超限")
+	}
+
 	go func() {
 		if user != nil {
 			errc <- copyBuffer(user.Username, rw1, rw2)

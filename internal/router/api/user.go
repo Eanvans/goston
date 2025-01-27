@@ -3,6 +3,7 @@ package api
 import (
 	"gostonc/internal/app"
 	"gostonc/internal/app/errcode"
+	"gostonc/internal/router/req"
 	"gostonc/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ import (
 
 func UserRegiser(c *gin.Context) {
 	resp := app.NewResponse(c)
-	data := RegisterUserReq{}
+	data := req.RegisterUserReq{}
 	if valid, errs := app.BindAndValid(c, &data); !valid {
 		logrus.Errorf("app.BindAndValid errs: %v", errs)
 		resp.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
@@ -28,7 +29,7 @@ func UserRegiser(c *gin.Context) {
 
 func PurchaseTimespan(c *gin.Context) {
 	resp := app.NewResponse(c)
-	data := UserPurchaseReq{}
+	data := req.UserPurchaseReq{}
 	if valid, errs := app.BindAndValid(c, &data); !valid {
 		logrus.Errorf("app.BindAndValid errs: %v", errs)
 		resp.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
@@ -42,4 +43,35 @@ func PurchaseTimespan(c *gin.Context) {
 	}
 
 	resp.ToResponse()
+}
+
+func UserLogin(c *gin.Context) {
+	param := req.AuthRequest{}
+	response := app.NewResponse(c)
+	valid, errs := app.BindAndValid(c, &param)
+	if !valid {
+		logrus.Errorf("app.BindAndValid errs: %v", errs)
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
+	}
+
+	_, err := service.DoLogin(param.Username, param.Password)
+	if err != nil {
+		logrus.Errorf("service.DoLogin err: %v", err)
+		response.ToErrorResponse(err.(*errcode.Error))
+		return
+	}
+
+	// token, refreshToken, tokenExpiredDuration, err := app.GenerateDoubleToken(user)
+	// if err != nil {
+	// 	logrus.Errorf("app.GenerateDoubleTokenerr: %v", err)
+	// 	response.ToErrorResponse(errcode.UnauthorizedTokenGenerate)
+	// 	return
+	// }
+
+	response.ToResponse(gin.H{
+		//"token":                  token, // access token
+		// "token_expired_duration": tokenExpiredDuration,
+		// "refresh_token":          refreshToken,
+	})
 }

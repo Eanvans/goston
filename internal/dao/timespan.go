@@ -31,3 +31,15 @@ func (r *RepoModule) UpdateUserTimespan(ts *model.TimeSpan) error {
 		Error
 	return err
 }
+
+func (r *RepoModule) GetValidUserTimespanList() ([]*model.TimeSpan, error) {
+	var tsList []*model.TimeSpan
+
+	err := r.db.
+		Where("expire_date > ?", time.Now().Unix()).
+		Preload("User").
+		Find(&tsList).
+		Error
+
+	return tsList, err
+}

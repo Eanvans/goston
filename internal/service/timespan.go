@@ -7,3 +7,15 @@ func UserPurchaseTimespan(userID int64) error {
 	}
 	return nil
 }
+
+func ResetAllUserTimespanMonthly() error {
+	tsList, err := DBbase.GetValidUserTimespanList()
+	if err != nil {
+		return err
+	}
+	for _, v := range tsList {
+		v.SpendFlow = 0
+		DBbase.UpdateUserTimespan(v)
+	}
+	return nil
+}

@@ -25,6 +25,7 @@ func (r *RepoModule) GetUserByUsername(username string) (*model.User, error) {
 	u := &model.User{}
 
 	err := r.db.
+		Preload("TimeSpan").
 		Where("username = ?", username).
 		First(u).
 		Error
@@ -39,6 +40,7 @@ func (r *RepoModule) GetUserByID(id int64) (*model.User, error) {
 	u := &model.User{}
 
 	err := r.db.
+		Preload("TimeSpan").
 		Where("id = ?", id).
 		First(u).
 		Error

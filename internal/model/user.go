@@ -36,7 +36,7 @@ type User struct {
 	Avatar string     `json:"avatar"`
 
 	Type     UserType `json:"type"` // 用户类型
-	TimeSpan TimeSpan `json:"time_span"`
+	TimeSpan TimeSpan `gorm:"foreignKey:user_id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"time_span"`
 }
 
 func NewUser(username, passowrd string) *User {
